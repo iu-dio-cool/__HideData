@@ -2,9 +2,8 @@
 #
 # 开发时间：2022/4/10 20:29
 
+import  math
 
-f = open("test.txt",encoding='UTF-8')
-line = f.read()
-print(line)
+for i in range(-4,4,1):
 
-f.close()
+    print(i)

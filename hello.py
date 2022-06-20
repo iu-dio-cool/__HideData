@@ -42,7 +42,7 @@ def get_key(strring):
 
 
 def mod(x, y):
-    return x % y;
+    return x % y
 
 
 # str1为载体图片路径，str2为隐写文件，str3为加密图片保存的路径

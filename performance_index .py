@@ -1,6 +1,3 @@
-# 编写人员：刘嘉豪
-#
-# 开发时间：2022/6/9 16:54
 import math
 import numpy as np
 from PIL import Image
@@ -17,8 +14,15 @@ def R(n):
 def psnr(img1, img2):
     img1 = np.array(Image.open(img1).convert('L')).astype(np.float64)
     img2 = np.array(Image.open(img2).convert('L')).astype(np.float64)
-    mse = np.mean((img1 - img2) ** 2)
+    mse = np.mean((img1-img2)**2)
     if mse == 0:
         return 100
     else:
-        return 10 * np.log10(255 / np.sqrt(mse))
+        return 20*np.log10(255/np.sqrt(mse))
+
+
+# 原图
+old = "D:\study_python\\newprogram\cat.png"
+# 处理后输出的图片路径
+new = "D:\study_python\\newprogram\cat_test.png"
+print(psnr(old, new))
