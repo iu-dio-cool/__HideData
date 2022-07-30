@@ -1,6 +1,7 @@
 # 编写人员：刘嘉豪
 #
 # 开发时间：2022/7/8 17:54
+import math
 
 from PIL import Image
 import Efficiency
@@ -55,66 +56,63 @@ def func(str1, str2, str3):
     print("width:" + str(width) + "\n")
     height = im.size[1]
     print("height:" + str(height) + "\n")
-    count = 0
     w = 0
     h = 0
-    # # 获取需要隐藏的信息
-    # key = get_key(10, 1, str2)  # key是转换n进制后的值
-    # # 隐藏信息长度
-    # keylen = len(key)
-    # print("len=", keylen)
     c1 = 1
     c2 = 9
     c3 = 73
     c4 = 585
-    # for h in range(0, height):
-    #
-    #     for w in range(0, width, 4):
-    #         if count == keylen:
-    #             break
     p1 = im.getpixel((w, h))  # 第i位置的像数值
     p2 = im.getpixel((w, h + 1))  # 第i位置的像数值
     p3 = im.getpixel((w, h + 2))  # 第i位置的像数值
     p4 = im.getpixel((w, h + 3))  # 第i位置的像数值
+    # p1 = 53
+    # p2 = 81
+    # p3 = 105
+    # p4 = 96
     print("p={} {} {} {}".format(p1, p2, p3, p4))
-    t = (c1 * p1 + c2 * p2 + c3 * p3 + c4 * p4)
-    s = int(get_key(10, 1, str2))
-    D = mod(s - t, 2**13)
+    t = mod(c1 * p1 + c2 * p2 + c3 * p3 + c4 * p4, 2 ** 13)
+    s = int(str2, 2)
+    D = mod(s - t, 2 ** 13)
     k = 2 ** 12
-    print("d  k",D,k,s-t)
+    print("d  k ", D, k, s, t, s - t)
     key = []
     if D > k:
         D = 2 ** 13 - D
-        key1 = dec2m(D, 3)
+        key1 = dec2m(D, 8)
         for i in range(4):
             key.append(int(key1[i]))
-        p4 -= key[3]
-        p3 += key[3]
+            print(key[i])
+        p4 -= key[0]
+        p3 += key[0]
 
-        p3 -= key[2]
-        p2 += key[2]
+        p3 -= key[1]
+        p2 += key[1]
 
-        p2 -= key[1]
-        p1 += key[1]
+        p2 -= key[2]
+        p1 += key[2]
 
-        p1 -= key[0]
+        p1 -= key[3]
         im.putpixel((w, h), p1)
         im.putpixel((w, h + 1), p2)
         im.putpixel((w, h + 2), p3)
         im.putpixel((w, h + 3), p4)
 
     elif D < k:
-        key = dec2m(D, 3)
-        p4 += key[3]
-        p3 -= key[3]
+        key1 = dec2m(D, 8)
+        for i in range(4):
+            key.append(int(key1[i]))
+            print(i, key[i])
+        p4 += key[0]
+        p3 -= key[0]
 
-        p3 += key[2]
-        p2 -= key[2]
+        p3 += key[1]
+        p2 -= key[1]
 
-        p2 += key[1]
-        p1 -= key[1]
+        p2 += key[2]
+        p1 -= key[2]
 
-        p1 += key[0]
+        p1 += key[3]
         im.putpixel((w, h), p1)
         im.putpixel((w, h + 1), p2)
         im.putpixel((w, h + 2), p3)
@@ -125,13 +123,6 @@ def func(str1, str2, str3):
         im.putpixel((w, h + 2), p3)
         im.putpixel((w, h + 3), p4)
 
-    print("D=", D)
-
-        #     count += 1
-        # if count == keylen:
-        #     break
-
-    #  im.show()
     im.save(str3)
 
 
@@ -142,30 +133,30 @@ def func2(le, str1):
 
     height = im.size[1]
     str2 = ""
-    count = 0
-    for h in range(0, height):
+    c1 = 1
+    c2 = 9
+    c3 = 73
+    c4 = 585
 
-        for w in range(0, width, ):
-            if count == le:
-                break
-            pixel1 = im.getpixel((w, h))  # 第i位置的像数值
-            # 计算f值
-            f = mod(pixel1, 5)
-            str2 += str(f)
-            count += 1
-            if count == le:
-                print("str2=", str2)
-                print("所求原二进制数据=", get_key(5, 0, str2))
-                break
+    p1 = im.getpixel((0, 0))  # 取n个像素出来
+    p2 = im.getpixel((0, 1))
+    p3 = im.getpixel((0, 2))
+    p4 = im.getpixel((0, 3))
+    print("p={} {} {} {}".format(p1, p2, p3, p4), c1 * p1 + c2 * p2 + c3 * p3 + c4 * p4, 2 ** 13)
+    # 计算t值
 
+    t = mod(c1 * p1 + c2 * p2 + c3 * p3 + c4 * p4,2**13)
 
+    print("t=", 63085 % 8192)
+    string = get_key(10,0,str(t))
+    print("st=", string)
 # 原图
-old = "D:\study_python\\newprogram\cat.png"
+old = "D:\study_python\\newprogram\\512_512\Airplane.png"
 # 处理后输出的图片路径
-new = "D:\study_python\\newprogram\cat_test.png"
+new = "D:\study_python\\newprogram\\test.png"
 # 需要隐藏的信息
 enc = "D:\study_python\\newprogram\\flag.txt"
 
-func(old, '110101101001', new)
+func(old, '1011001010010', new)
 print("psnr=", Efficiency.psnr(old, new))
-# func2(6, new)
+func2(6, new)
