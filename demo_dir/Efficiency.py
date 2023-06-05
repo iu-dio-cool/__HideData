@@ -14,11 +14,17 @@ def R(n):
 
 
 # Peak Signal-to-Noise Ratio
-def psnr(img1, img2):
-    img1 = np.array(Image.open(img1).convert('L')).astype(np.float64)
-    img2 = np.array(Image.open(img2).convert('L')).astype(np.float64)
-    mse = np.mean((img1 - img2) ** 2)
-    if mse == 0:
-        return 100
+def PSNR(image_array1, image_array2):
+    # 输入为两个图像数组，一维，大小相同
+    assert (np.size(image_array1) == np.size(image_array2))
+    n = np.size(image_array1)
+    assert (n > 0)
+    MSE = 0.0
+    for i in range(0, n):
+        MSE += math.pow(int(image_array1[i]) - int(image_array2[i]), 2)
+    MSE = MSE / n
+    if MSE > 0:
+        rtnPSNR = 10 * math.log10(255 * 255 / MSE)
     else:
-        return 10 * np.log10(255 / np.sqrt(mse))
+        rtnPSNR = 100
+    return rtnPSNR

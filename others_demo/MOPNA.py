@@ -810,8 +810,8 @@ def MOPNA(image_array, secret_string, n=2, k=3, image_file_name=''):
     c1 = 11
     # 分成n个像素一组,保证整数组，不足的补零
     num_pixel_groups = math.ceil(image_array.size / n)
+    # pixels_group为num_pixel_groups行n列
     pixels_group = np.zeros((num_pixel_groups, n))
-
     for i in range(0, num_pixel_groups, 1):
         for j in range(0, n, 1):
             if i * n + j < image_array.size:

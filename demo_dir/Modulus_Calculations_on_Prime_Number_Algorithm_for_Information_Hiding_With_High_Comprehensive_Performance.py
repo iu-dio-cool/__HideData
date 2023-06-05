@@ -4,14 +4,46 @@
 from PIL import Image
 import numpy as np
 import math
+import os  # 用于查找目录下的文件
+import sys
+import time
+import Efficiency
+from pyinstrument import Profiler  # 查看运行时间
+
+profiler = Profiler()
+profiler.start()
+
+# 输出图片的位置
+ImageWidth = 256
+ImageHeight = 256
+FILE_PATH = r"D:\study_python\newprogram\%d_%d\Output" % (ImageWidth, ImageHeight)
+if not os.path.exists(FILE_PATH):
+    os.makedirs(FILE_PATH)
+
+
+# 写入文件
+def SaveResult(str):
+    # 将str写入结果文件中
+    try:
+        fname = time.strftime("%Y%m%d", time.localtime())
+        f2 = open(FILE_PATH + '\\0_result' + fname + '.txt', 'a+')
+        # f2 = open('result' + fname + '.txt','a+')
+        f2.read()
+        f2.write('\n')
+        f2.write(str)
+        f2.write('\n')
+    finally:
+        if f2:
+            f2.close()
+    return 0
 
 
 # ALGORITHM: MOPNA our new 方法
-def MOPNA(image_array, secret_string, n=2, k=3, image_file_name=''):
+def MOPNA(image_array, secret_string,shape1,shape2,n=2, k=3,):
     # image_array:输入的一维图像数组
     # image_file_name:传入的图像文件名（带全路径）
     # n为一组像素的数量,在本算法中，固定为2
-    n = 2
+    # n = 2
     # k = 3 #每个pixel嵌入nk+1个bit
     moshu = 2 ** (n * k + 1)  # 模数的底数
     c0 = 3
@@ -75,7 +107,7 @@ def MOPNA(image_array, secret_string, n=2, k=3, image_file_name=''):
         tmp_P = np.zeros(2)
         for j0 in range(-1 * moshu, moshu, 1):
             for j1 in range(-1 * moshu, moshu, 1):
-                tmp_P[0] = (pixels_group[i, 0] + j0)
+                tmp_P[0] = (pixels_group[i, 0] + j0)  # 寻找x使d = f (G + X)
                 tmp_P[1] = (pixels_group[i, 1] + j1)
                 if (int(tmp_P[0]) >= 0 and int(tmp_P[1]) >= 0):
                     tmp = (c0 * tmp_P[0] + c1 * tmp_P[1]) % moshu
@@ -110,29 +142,96 @@ def MOPNA(image_array, secret_string, n=2, k=3, image_file_name=''):
     # -----------------------------------------------------------------------------------
     # 输出图像
     img_out = embedded_pixels_group.flatten()
-    img_out = img_out[:ImageWidth * ImageHeight]  # 取前面的pixel
+    img_out = img_out[:shape1 * shape2]  # 取前面的pixel
     # 计算PSNR
     img_array_out = img_out.copy()
     # psnr = PSNR(image_array,img_array_out)
     imgpsnr1 = image_array[0:num_pixels_changed]
     imgpsnr2 = img_array_out[0:num_pixels_changed]
-    psnr = PSNR(imgpsnr1, imgpsnr2)
-
+    psnr = Efficiency.PSNR(imgpsnr1, imgpsnr2)
+    print("PSNR="+str(psnr))
     # 重组图像
-    img_out = img_out.reshape(ImageWidth, ImageHeight)
-    img_out = Image.fromarray(img_out)
-    # img_out.show()
-    img_out = img_out.convert('L')
 
-    (filepath, tempfilename) = os.path.split(image_file_name)
-    (originfilename, extension) = os.path.splitext(tempfilename)
-    new_file = FILE_PATH + '\\' + originfilename + '_' + sys._getframe().f_code.co_name + "_n_" + str(n) + "_k_" + str(
-        k) + ".png"
-    img_out.save(new_file, 'png')
+    img_out = img_out.reshape(shape1, shape2)
+
+    img_out = Image.fromarray(img_out)
+    img_out = img_out.convert('L')
+    print(type(img_out))
+    # img_out.show()
+    return img_out
+    # (filepath, tempfilename) = os.path.split(image_file_name)
+    # (originfilename, extension) = os.path.splitext(tempfilename)
+    # new_file = FILE_PATH + '\\' + originfilename + '_' + sys._getframe().f_code.co_name + "_n_" + str(n) + "_k_" + str(
+    #    k) + ".png"
+    # img_out.save(new_file, 'png') # 图片保存
 
     # 保存结果到文件
-    str1 = 'Image:%30s,Method:%15s,n=%d,k=%d,pixels used: %d,PSNR: %.2f' % (
-        originfilename, sys._getframe().f_code.co_name, n, k, num_pixels_changed, psnr)
-    print(str1)
-    SaveResult('\n' + str1)
-    return
+    # str1 = 'Image:%30s,Method:%15s,n=%d,k=%d,pixels used: %d,PSNR: %.2f' % (originfilename, sys._getframe().f_code.co_name, n, k, num_pixels_changed, psnr)
+    # print(str1)
+    # SaveResult('\n' + str1)
+
+
+# 需要嵌入的信息,用整形0,1两种数值，分别表示二进制的0,1
+ImageWidth = 256
+ImageHeight = 256
+# np.random.seed(1203)
+# s_data = np.random.randint(0, 2, 98000)  # 49000 #98000
+# path = r"F:\Pictures\256_256"
+path = os.getcwd()  # 获取当前路径
+path = path + r"\OriginalPictures\%d_%d" % (ImageWidth, ImageHeight)
+# SaveResult('start')
+
+
+def poll_fun():
+    for file in os.listdir(path):
+        file_path = os.path.join(path, file)
+        # if "Pepper.png" not in file_path:
+        #    continue
+        # if "Tiffany.png" not in file_path:
+        #    continue
+        if os.path.isfile(file_path):
+            print(file_path)
+            # 开始仿真
+            img = Image.open(file_path, "r")
+            img = img.convert('L')
+            # img.show()
+
+            # 将二维数组，转换为一维数组
+            img_array1 = np.array(img)
+            img_array2 = img_array1.reshape(img_array1.shape[0] * img_array1.shape[1])
+            # print(img_array2)
+            # 将二维数组，转换为一维数组
+            img_array3 = img_array1.flatten()
+            # print(img_array3)
+            MOPNA(img_array3, s_data, 2, 2, file_path,img_array1.shape[0],img_array1.shape[1])
+
+            # MOPNA(img_array3, s_data, 2, 3, file_path)
+
+            print('-----------------------')
+    SaveResult('end')
+    # time.sleep(10)
+
+
+def sole_fun(file_path,s_data):
+    print(file_path)
+    # 开始仿真
+    img = Image.open(file_path, "r")
+    img = img.convert('L')
+    # img.show()
+
+    # 将二维数组，转换为一维数组
+    img_array1 = np.array(img)
+    img_array2 = img_array1.reshape(img_array1.shape[0] * img_array1.shape[1])
+    print("大小是："+str(img_array1.shape[0])+"*"+str(img_array1.shape[1]))
+    # 将二维数组，转换为一维数组
+    img_array3 = img_array1.flatten()
+    # print(img_array3)
+    img_out = MOPNA(img_array3, s_data, img_array1.shape[0],img_array1.shape[1],2, 2)
+    return img_out
+
+
+
+# poll_fun()
+# sole_fun("D:\study_python\\newprogram\demo_dir\OriginalPictures\\256_256\\Boat.png")
+# profiler.stop()
+# profiler.print()
