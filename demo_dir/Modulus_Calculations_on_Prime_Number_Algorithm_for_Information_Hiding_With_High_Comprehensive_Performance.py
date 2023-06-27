@@ -98,7 +98,7 @@ def MOPNA(image_array, secret_string,shape1,shape2,n=2, k=3,):
 
     # -----------------------------------------------------------------------------------
 
-    assert (num_pixel_groups > num_secret_groups)
+    assert (num_pixel_groups > num_secret_groups),'超出隐藏极限'
     embedded_pixels_group = pixels_group.copy()
     for i in range(0, num_secret_groups, 1):
         tmp_MaxPsnr = -120000
@@ -138,7 +138,7 @@ def MOPNA(image_array, secret_string,shape1,shape2,n=2, k=3,):
             tmp = (c0 * (embedded_pixels_group[i, 0]) + c1 * (embedded_pixels_group[i, 1])) % moshu
             recover_d_array[i] = tmp
 
-    assert (int((recover_d_array - secret_d_array).sum()) == 0)
+    assert (int((recover_d_array - secret_d_array).sum()) == 0), "recover_d_array - secret_d_array不对"
     # -----------------------------------------------------------------------------------
     # 输出图像
     img_out = embedded_pixels_group.flatten()
@@ -153,12 +153,10 @@ def MOPNA(image_array, secret_string,shape1,shape2,n=2, k=3,):
     # 重组图像
 
     img_out = img_out.reshape(shape1, shape2)
-
     img_out = Image.fromarray(img_out)
     img_out = img_out.convert('L')
     print(type(img_out))
-    # img_out.show()
-    return img_out
+    return img_out,recover_d_array
     # (filepath, tempfilename) = os.path.split(image_file_name)
     # (originfilename, extension) = os.path.splitext(tempfilename)
     # new_file = FILE_PATH + '\\' + originfilename + '_' + sys._getframe().f_code.co_name + "_n_" + str(n) + "_k_" + str(
@@ -214,7 +212,7 @@ def poll_fun():
 
 def sole_fun(file_path,s_data):
     print(file_path)
-    # 开始仿真
+    # 开始实验
     img = Image.open(file_path, "r")
     img = img.convert('L')
     # img.show()
@@ -225,9 +223,8 @@ def sole_fun(file_path,s_data):
     print("大小是："+str(img_array1.shape[0])+"*"+str(img_array1.shape[1]))
     # 将二维数组，转换为一维数组
     img_array3 = img_array1.flatten()
-    # print(img_array3)
-    img_out = MOPNA(img_array3, s_data, img_array1.shape[0],img_array1.shape[1],2, 2)
-    return img_out
+    img_out,recover_d_array = MOPNA(img_array3, s_data, img_array1.shape[0],img_array1.shape[1],2, 2)
+    return img_out,recover_d_array
 
 
 

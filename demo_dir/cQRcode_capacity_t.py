@@ -7,6 +7,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from pyzbar import pyzbar
 import Modulus_Calculations_on_Prime_Number_Algorithm_for_Information_Hiding_With_High_Comprehensive_Performance
+import matplotlib.pyplot as plt
 
 
 def detect_qr_code(image_path):
@@ -42,7 +43,7 @@ def detect_qr_code(image_path):
 def capacity_test():
     # 循环以每次100的步长生成随机一维数组
 
-    for i in range(83, 120):
+    for i in range(80, 120):
         s_data = np.random.randint(0, 2, i * 100)
         # 将生成的数组进行嵌入不同版本二维码
         image_path1 = "D:\ALL_aboutSWU\IDEA_and_code\QR_codePic\\v1_M.png"
@@ -50,17 +51,24 @@ def capacity_test():
         image_path3 = "D:\ALL_aboutSWU\IDEA_and_code\QR_codePic\\v5_M.png"
         img_out = Modulus_Calculations_on_Prime_Number_Algorithm_for_Information_Hiding_With_High_Comprehensive_Performance \
             .sole_fun(image_path1, s_data)
+        # 显示载体图像
+        plt.subplot(2, 2, 1)
+        plt.imshow(Image.open(image_path1), cmap='gray')
+        plt.title('Original Image')
 
+        plt.subplot(2, 2, 2)
+        plt.imshow(img_out, cmap='gray')
+        plt.title('Stego Image')
+        plt.waitforbuttonpress()
         # 使用二维码识别函数对变换后的二维码图片识别，如果识别失败
         if detect_qr_code(img_out):
-            print("当前识别的长度："+str(len(s_data)))
+            print("当前识别的长度：" + str(len(s_data)))
         else:
-            print("当前识别失败的长度："+str(len(s_data)))
+            print("当前识别失败的长度：" + str(len(s_data)))  # 打印当前嵌入容量
             return False
-        # 打印当前嵌入容量
 
 
 capacity_test()
 # 调用函数进行二维码识别
-# image_path = "D:\ALL_aboutSWU\IDEA_and_code\QR_codePic\\v1_M.png"  # 替换为你的二维码图像路径
+# image_path = "D:\ALL_aboutSWU\IDEA_and_code\QR_codePic\\v1_M.png"  # 替换为二维码图像路径
 # detect_qr_code(image_path)
