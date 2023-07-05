@@ -137,7 +137,7 @@ def MOPNA(image_array, secret_string,shape1,shape2,n=2, k=3,):
         for j in range(0, num_BitsPerPixelsGoup, 1):
             tmp = (c0 * (embedded_pixels_group[i, 0]) + c1 * (embedded_pixels_group[i, 1])) % moshu
             recover_d_array[i] = tmp
-
+    print(recover_d_array)
     assert (int((recover_d_array - secret_d_array).sum()) == 0), "recover_d_array - secret_d_array不对"
     # -----------------------------------------------------------------------------------
     # 输出图像
@@ -155,7 +155,6 @@ def MOPNA(image_array, secret_string,shape1,shape2,n=2, k=3,):
     img_out = img_out.reshape(shape1, shape2)
     img_out = Image.fromarray(img_out)
     img_out = img_out.convert('L')
-    print(type(img_out))
     return img_out,recover_d_array
     # (filepath, tempfilename) = os.path.split(image_file_name)
     # (originfilename, extension) = os.path.splitext(tempfilename)
@@ -225,6 +224,7 @@ def sole_fun(file_path,s_data):
     img_array3 = img_array1.flatten()
     img_out,recover_d_array = MOPNA(img_array3, s_data, img_array1.shape[0],img_array1.shape[1],2, 2)
     return img_out,recover_d_array
+
 
 
 

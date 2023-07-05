@@ -68,13 +68,14 @@ def QRcode_Embed(image_path1, image_path2):
     binary_pixelValues = np.where(od_pixel_values >= 128, 1, 0)
     # 拼接数据
     s_data = np.concatenate((binary_array, binary_pixelValues))
-    print("要隐藏的数据长度"+str(len(s_data)))
+    print("要隐藏的数据长度" + str(len(s_data)))
     # 选取隐藏算法:
     binary_list = []
 
     img_out, recover_d_array = \
         Modulus_Calculations_on_Prime_Number_Algorithm_for_Information_Hiding_With_High_Comprehensive_Performance \
             .sole_fun(image_path2, s_data)
+    # 提取操作
     for decimal_number in recover_d_array:
         binary_string = bin(int(decimal_number))[2:]  # 去掉前缀 '0b'
         binary_string = binary_string.zfill(5)  # 补全到五位二进制数
@@ -82,8 +83,8 @@ def QRcode_Embed(image_path1, image_path2):
         binary_list.append(reversed_binary_string)
     binary_array = np.array(list("".join(binary_list)), dtype=int)
 
-
-    # save_path = "D:\study_python\\newprogram\QRcodePic_Out\\image_path2out.png"
+    save_path = "D:\ALL_aboutSWU\cat_dog_lab\QR_embed\out_pic\img_out1.png"
+    # 生成隐藏后的二维码
     # img_out.save(save_path)
     # 使用二维码识别函数对变换后的二维码图片识别，如果识别失败
     if detect_qr_code(img_out):
@@ -99,7 +100,7 @@ def QRcode_Embed(image_path1, image_path2):
     eight_bit_binary = binary_array[:8]
     secret_number = int("".join(map(str, eight_bit_binary)), 2)
     # 截取出像素
-    stego_array = binary_array[8:secret_number*secret_number+8]
+    stego_array = binary_array[8:secret_number * secret_number + 8]
 
     assert (int((s_data[8:] - stego_array).sum()) == 0), "s_data - stego_array"
 
@@ -107,41 +108,35 @@ def QRcode_Embed(image_path1, image_path2):
     # 将一维数组转换成二维数组
     width = int(np.sqrt(len(stego_array)))
     binary_array_2d = np.reshape(stego_array, (width, width))
-    # # 与1进行异或操作
-    # result = np.bitwise_xor(binary_array_2d, 1)
-    # 将二维数组转换成灰度图像
+    binary_array_2d = binary_array_2d.astype(np.uint8)
     gray_image = Image.fromarray(binary_array_2d * 255)
+
     # 原来二维码图像对比
     # 显示载体图像
     # 设置中文字体
     plt.rcParams['font.family'] = 'SimHei'
-    plt.subplot(1, 3, 1)
+    plt.subplot(2, 2, 1)
     plt.imshow(Image.open(image_path1), cmap='gray')
     plt.title('路径1，被隐藏二维码')
 
-    plt.subplot(1, 3, 2)
+    plt.subplot(2, 2, 2)
     plt.imshow(gray_image, cmap='gray')
     plt.title('提取出来的二维码')
 
-    plt.subplot(1, 3, 3)
+    plt.subplot(2, 2, 3)
     plt.imshow(Image.open(image_path2), cmap='gray')
     plt.title('路径2，用来隐藏的二维码')
 
+    plt.subplot(2, 2, 4)
+    plt.imshow(img_out, cmap='gray')
+    plt.title('隐藏后的二维码')
+
     plt.waitforbuttonpress()
 
+
 # 将生成的数组进行嵌入不同版本二维码
-image_path1 = "D:\study_python\\newprogram\QRcodePic\\v1_M.png"
-image_path2 = "D:\study_python\\newprogram\QRcodePic\\v3_M.png"
+image_path1 = "D:\ALL_aboutSWU\cat_dog_lab\QR_embed\in_pic\qrcode_v1_ec0_bs5_bd4.png"
+image_path2 = "D:\ALL_aboutSWU\cat_dog_lab\QR_embed\in_pic\qrcode_v3_ec0_bs5_bd4.png"
 image_path3 = "D:\study_python\\newprogram\QRcodePic\\v5_M.png"
 image_path4 = "D:\study_python\\newprogram\QRcodePic\\v10_M.png"
-QRcode_Embed(image_path4, image_path3)
-
-# # 显示载体图像
-# plt.subplot(2, 2, 1)
-# plt.imshow(Image.open(image_path1), cmap='gray')
-# plt.title('Original Image')
-#
-# plt.subplot(2, 2, 2)
-# plt.imshow(img_out, cmap='gray')
-# plt.title('Stego Image')
-# plt.waitforbuttonpress()
+QRcode_Embed(image_path1, image_path2)
